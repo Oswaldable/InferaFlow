@@ -81,7 +81,10 @@ async function handleDelete(tagId: string) {
 
 <template>
   <div class="flex-col-stretch gap-16px overflow-hidden <sm:overflow-auto">
-    <NCard title="组织标签" :bordered="false" size="small" class="sm:flex-1-hidden card-wrapper">
+    <NCard :bordered="false" size="small" class="sm:flex-1-hidden card-wrapper">
+      <template #header>
+        <span class="tech-card-title">组织标签</span>
+      </template>
       <template #header-extra>
         <TableHeaderOperation v-model:columns="columnChecks" :loading="loading" @add="handleAdd" @refresh="getData" />
       </template>
@@ -108,4 +111,13 @@ async function handleDelete(tagId: string) {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.tech-card-title {
+  background: linear-gradient(135deg, #00d4ff, #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 600;
+  font-size: 16px;
+}
+</style>

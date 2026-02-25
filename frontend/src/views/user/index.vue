@@ -99,7 +99,10 @@ function handleOrgTag(row: Api.User.Item) {
     <Teleport defer to="#header-extra">
       <UserSearch v-model:model="searchParams" @reset="resetSearchParams" @search="getData" />
     </Teleport>
-    <NCard title="用户列表" :bordered="false" size="small" class="sm:flex-1-hidden card-wrapper">
+    <NCard :bordered="false" size="small" class="sm:flex-1-hidden card-wrapper">
+      <template #header>
+        <span class="tech-card-title">用户列表</span>
+      </template>
       <template #header-extra>
         <TableHeaderOperation v-model:columns="columnChecks" :addable="false" :loading="loading" @refresh="getData" />
       </template>
@@ -120,4 +123,13 @@ function handleOrgTag(row: Api.User.Item) {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.tech-card-title {
+  background: linear-gradient(135deg, #00d4ff, #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 600;
+  font-size: 16px;
+}
+</style>

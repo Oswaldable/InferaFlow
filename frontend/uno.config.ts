@@ -23,8 +23,10 @@ export default defineConfig<Theme>({
     }
   },
   shortcuts: {
-    'card-wrapper': 'rd-4 shadow-2xl dark:shadow-[0_25px_50px_-12px_rgba(27,27,27,0.1)]',
-    'flex-cc': 'flex items-center justify-center'
+    'card-wrapper': 'rd-12px border-1 border-solid border-[rgba(0,212,255,0.1)] bg-[rgba(17,24,39,0.6)] backdrop-blur-16',
+    'flex-cc': 'flex items-center justify-center',
+    'tech-glass': 'bg-[rgba(17,24,39,0.6)] backdrop-blur-16 border-1 border-solid border-[rgba(0,212,255,0.1)] rd-12px',
+    'tech-text-gradient': 'bg-gradient-to-r from-[#00d4ff] to-[#7c3aed] bg-clip-text text-transparent'
   },
   transformers: [transformerDirectives(), transformerVariantGroup()],
   presets: [presetWind3({ dark: 'class' }), presetSoybeanAdmin()]

@@ -143,6 +143,6 @@ function getSiderCollapsedWidth() {
 
 <style lang="scss">
 #__SCROLL_EL_ID__ {
-  @include scrollbar();
+  @include scrollbar(6px, rgba(0, 212, 255, 0.2));
 }
 </style>

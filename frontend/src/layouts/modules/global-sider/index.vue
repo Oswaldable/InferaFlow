@@ -20,7 +20,7 @@ const menuWrapperClass = computed(() => (showLogo.value ? 'flex-1-hidden' : 'h-f
 </script>
 
 <template>
-  <DarkModeContainer class="size-full flex-col-stretch shadow-sider" :inverted="darkMenu">
+  <DarkModeContainer class="tech-sider size-full flex-col-stretch" :inverted="darkMenu">
     <GlobalLogo
       v-if="showLogo"
       :show-title="!appStore.siderCollapse"
@@ -30,4 +30,23 @@ const menuWrapperClass = computed(() => (showLogo.value ? 'flex-1-hidden' : 'h-f
   </DarkModeContainer>
 </template>
 
-<style scoped></style>
+<style scoped>
+.tech-sider {
+  background: rgba(10, 14, 26, 0.95) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(0, 212, 255, 0.08);
+  position: relative;
+}
+
+.tech-sider::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, rgba(0, 212, 255, 0.2), rgba(124, 58, 237, 0.2), transparent);
+  pointer-events: none;
+}
+</style>

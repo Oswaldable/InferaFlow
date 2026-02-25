@@ -56,23 +56,74 @@ onMounted(() => {
 
 <template>
   <Suspense>
-    <NScrollbar ref="scrollbarRef" class="h-0 flex-auto">
+    <NScrollbar ref="scrollbarRef" class="chat-list-scroll h-0 flex-auto">
       <Teleport defer to="#header-extra">
-        <div class="px-10">
-          <NForm :model="params" label-placement="left" :show-feedback="false" inline>
+        <div class="chat-filter-wrap px-10">
+          <NForm :model="params" label-placement="left" :show-feedback="false" inline class="chat-filter-form">
             <NFormItem label="时间">
               <NDatePicker v-model:value="range" type="daterange" />
             </NFormItem>
           </NForm>
         </div>
       </Teleport>
-      <NSpin :show="loading">
+      <NSpin :show="loading" class="chat-list-spin">
         <VueMarkdownItProvider>
           <ChatMessage v-for="(item, index) in list" :key="index" :msg="item" :session-id="sessionId" />
         </VueMarkdownItProvider>
+        <NEmpty v-if="!loading && !list.length" description="对话从这里开始" class="chat-empty-state" />
       </NSpin>
     </NScrollbar>
   </Suspense>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.chat-filter-wrap {
+  :deep(.n-form) {
+    border-radius: 12px;
+    padding: 8px 12px;
+    border: 1px solid rgba(94, 234, 212, 0.22);
+    background: rgba(15, 23, 42, 0.54);
+    backdrop-filter: blur(10px);
+  }
+}
+
+.chat-list-scroll {
+  border-radius: 16px;
+  background: linear-gradient(170deg, rgba(8, 13, 24, 0.5), rgba(12, 19, 35, 0.28));
+}
+
+.chat-list-spin {
+  min-height: 100%;
+  padding: 10px 8px 14px;
+}
+
+.chat-empty-state {
+  margin-top: 72px;
+}
+
+:deep(.n-form .n-form-item .n-form-item-label) {
+  color: #b1c0d3;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+:deep(.n-date-picker .n-input) {
+  border-color: rgba(148, 163, 184, 0.3) !important;
+  background: rgba(15, 23, 42, 0.56) !important;
+}
+
+:deep(.n-date-picker .n-input__input-el) {
+  color: #dbe6f5 !important;
+}
+
+@media (max-width: 640px) {
+  .chat-list-spin {
+    padding: 6px 4px 8px;
+  }
+
+  .chat-filter-wrap {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+</style>

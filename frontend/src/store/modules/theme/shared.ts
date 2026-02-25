@@ -245,13 +245,154 @@ export function getNaiveTheme(colors: App.Theme.ThemeColor, recommended = false)
   const theme: GlobalThemeOverrides = {
     common: {
       ...getNaiveThemeColors(colors, recommended),
-      borderRadius: '6px'
+      borderRadius: '8px',
+      bodyColor: '#0a0e1a',
+      cardColor: 'rgba(17, 24, 39, 0.6)',
+      modalColor: 'rgba(17, 24, 39, 0.9)',
+      popoverColor: 'rgba(17, 24, 39, 0.95)',
+      tableColor: 'rgba(17, 24, 39, 0.4)',
+      inputColor: 'rgba(17, 24, 39, 0.8)',
+      actionColor: 'rgba(17, 24, 39, 0.6)',
+      hoverColor: 'rgba(0, 212, 255, 0.08)',
+      tableColorHover: 'rgba(0, 212, 255, 0.04)',
+      tableColorStriped: 'rgba(0, 212, 255, 0.02)',
+      borderColor: 'rgba(0, 212, 255, 0.12)',
+      dividerColor: 'rgba(0, 212, 255, 0.08)',
+      textColor1: '#e2e8f0',
+      textColor2: '#cbd5e1',
+      textColor3: '#64748b',
+      placeholderColor: '#475569',
+      iconColor: '#64748b',
+      iconColorHover: '#00d4ff',
+      clearColor: '#64748b',
+      closeIconColor: '#64748b',
+      closeIconColorHover: '#00d4ff'
     },
     LoadingBar: {
       colorLoading
     },
     Tag: {
       borderRadius: '6px'
+    },
+    Button: {
+      borderRadiusMedium: '8px',
+      borderRadiusSmall: '6px',
+      borderRadiusLarge: '10px'
+    },
+    Card: {
+      borderRadius: '12px',
+      borderColor: 'rgba(0, 212, 255, 0.1)',
+      color: 'rgba(17, 24, 39, 0.6)',
+      titleFontWeight: '600',
+      titleTextColor: '#e2e8f0'
+    },
+    Input: {
+      color: 'rgba(17, 24, 39, 0.8)',
+      colorFocus: 'rgba(17, 24, 39, 0.9)',
+      border: '1px solid rgba(100, 116, 139, 0.3)',
+      borderHover: '1px solid rgba(0, 212, 255, 0.4)',
+      borderFocus: '1px solid rgba(0, 212, 255, 0.6)',
+      boxShadowFocus: '0 0 15px rgba(0, 212, 255, 0.15)',
+      caretColor: '#00d4ff',
+      borderRadius: '8px',
+      placeholderColor: '#475569',
+      textColor: '#e2e8f0'
+    },
+    DataTable: {
+      thColor: 'rgba(0, 212, 255, 0.06)',
+      tdColor: 'transparent',
+      tdColorHover: 'rgba(0, 212, 255, 0.04)',
+      tdColorStriped: 'rgba(0, 212, 255, 0.02)',
+      thTextColor: '#64748b',
+      tdTextColor: '#cbd5e1',
+      borderColor: 'rgba(0, 212, 255, 0.06)',
+      borderRadius: '12px'
+    },
+    Menu: {
+      itemTextColor: '#64748b',
+      itemTextColorHover: '#00d4ff',
+      itemTextColorActive: '#00d4ff',
+      itemTextColorActiveHover: '#00d4ff',
+      itemTextColorChildActive: '#00d4ff',
+      itemTextColorChildActiveHover: '#00d4ff',
+      itemIconColor: '#64748b',
+      itemIconColorHover: '#00d4ff',
+      itemIconColorActive: '#00d4ff',
+      itemIconColorActiveHover: '#00d4ff',
+      itemIconColorChildActive: '#00d4ff',
+      itemIconColorChildActiveHover: '#00d4ff',
+      itemColorHover: 'rgba(0, 212, 255, 0.06)',
+      itemColorActive: 'rgba(0, 212, 255, 0.1)',
+      itemColorActiveHover: 'rgba(0, 212, 255, 0.12)',
+      arrowColor: '#64748b',
+      arrowColorHover: '#00d4ff',
+      arrowColorActive: '#00d4ff',
+      arrowColorActiveHover: '#00d4ff',
+      arrowColorChildActive: '#00d4ff',
+      arrowColorChildActiveHover: '#00d4ff',
+      borderRadius: '8px'
+    },
+    Tabs: {
+      tabTextColorActiveLine: '#00d4ff',
+      tabTextColorHoverLine: '#00d4ff',
+      barColor: '#00d4ff'
+    },
+    Dialog: {
+      color: 'rgba(17, 24, 39, 0.95)',
+      textColor: '#e2e8f0',
+      borderRadius: '12px'
+    },
+    Form: {
+      labelTextColor: '#94a3b8'
+    },
+    Popover: {
+      color: 'rgba(17, 24, 39, 0.95)',
+      textColor: '#e2e8f0',
+      borderRadius: '8px'
+    },
+    Tooltip: {
+      color: 'rgba(17, 24, 39, 0.95)',
+      textColor: '#e2e8f0',
+      borderRadius: '6px'
+    },
+    Notification: {
+      color: 'rgba(17, 24, 39, 0.95)',
+      textColor: '#e2e8f0',
+      borderRadius: '12px'
+    },
+    Dropdown: {
+      color: 'rgba(17, 24, 39, 0.95)',
+      optionTextColor: '#cbd5e1',
+      optionTextColorHover: '#00d4ff',
+      optionColorHover: 'rgba(0, 212, 255, 0.08)',
+      borderRadius: '8px'
+    },
+    Pagination: {
+      itemTextColor: '#64748b',
+      itemTextColorHover: '#00d4ff',
+      itemTextColorActive: '#00d4ff',
+      itemBorderRadius: '6px'
+    },
+    Progress: {
+      railColor: 'rgba(0, 212, 255, 0.1)',
+      textColorLineInner: '#fff'
+    },
+    DatePicker: {
+      panelColor: 'rgba(17, 24, 39, 0.95)',
+      panelTextColor: '#e2e8f0',
+      itemTextColor: '#cbd5e1',
+      itemTextColorActive: '#fff',
+      panelHeaderDividerColor: 'rgba(0, 212, 255, 0.1)',
+      calendarDaysDividerColor: 'rgba(0, 212, 255, 0.06)',
+      arrowColor: '#64748b',
+      borderRadius: '8px'
+    },
+    Scrollbar: {
+      color: 'rgba(0, 212, 255, 0.2)',
+      colorHover: 'rgba(0, 212, 255, 0.35)',
+      borderRadius: '3px',
+      width: '6px',
+      height: '6px'
     }
   };
 

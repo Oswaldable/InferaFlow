@@ -325,8 +325,55 @@ public class UserController {
     }
 }
 
-// 用户请求记录类
-record UserRequest(String username, String password) {}
+// 用户请求体
+class UserRequest {
+    private String username;
+    private String password;
 
-// 主组织标签请求记录类
-record PrimaryOrgRequest(String primaryOrg) {}
+    public UserRequest() {
+    }
+
+    public String username() {
+        return username;
+    }
+
+    public String password() {
+        return password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+}
+
+// 主组织标签请求体
+class PrimaryOrgRequest {
+    private String primaryOrg;
+
+    public PrimaryOrgRequest() {
+    }
+
+    public String primaryOrg() {
+        return primaryOrg;
+    }
+
+    public String getPrimaryOrg() {
+        return primaryOrg;
+    }
+
+    public void setPrimaryOrg(String primaryOrg) {
+        this.primaryOrg = primaryOrg;
+    }
+}

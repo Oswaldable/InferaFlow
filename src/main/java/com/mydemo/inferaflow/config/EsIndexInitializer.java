@@ -43,6 +43,8 @@ public class EsIndexInitializer implements CommandLineRunner {
                     logger.error("重试初始化索引失败，请检查Elasticsearch连接配置，比如说是否开启了 HTTPS 模式: {}", retryException.getMessage());
                     throw new RuntimeException("初始化索引失败，重试也未能成功", retryException);
                 }
+            } else if (exception.getCause() instanceof java.net.ConnectException) {
+                logger.warn("⚠️ Elasticsearch 服务未启动，跳过索引初始化。搜索功能将不可用，请启动 Elasticsearch 后重启应用。");
             } else {
                 throw new RuntimeException("初始化索引失败", exception);
             }

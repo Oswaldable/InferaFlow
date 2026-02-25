@@ -11,12 +11,7 @@ defineOptions({
 });
 
 interface Props {
-  /** Whether to show the logo */
-  // showLogo?: App.Global.HeaderProps['showLogo'];
-  /** Whether to show the menu toggler */
   showMenuToggler?: App.Global.HeaderProps['showMenuToggler'];
-  /** Whether to show the menu */
-  // showMenu?: App.Global.HeaderProps['showMenu'];
 }
 
 defineProps<Props>();
@@ -29,21 +24,14 @@ const isDev = import.meta.env.DEV;
 </script>
 
 <template>
-  <DarkModeContainer class="ml-12 h-full flex-y-center justify-between bg-transparent">
-    <div id="header-extra" class="h-full flex-col justify-center rd-full bg-container shadow-2xl"></div>
-    <!-- <GlobalLogo v-if="showLogo" class="h-full" :style="{ width: themeStore.sider.width + 'px' }" /> -->
+  <DarkModeContainer class="tech-header ml-12 h-full flex-y-center justify-between">
+    <div id="header-extra" class="h-full flex-col justify-center rd-full tech-header-section px-4"></div>
     <MenuToggler
       v-if="showMenuToggler && appStore.isMobile"
       :collapsed="appStore.siderCollapse"
       @click="appStore.toggleSiderCollapse"
     />
-    <!--
-    <div v-if="showMenu" :id="GLOBAL_HEADER_MENU_ID" class="h-full flex-y-center flex-1-hidden"></div>
-    <div v-else class="h-full flex-y-center flex-1-hidden">
-      <GlobalBreadcrumb v-if="!appStore.isMobile" class="ml-12px" />
-    </div>
--->
-    <div class="h-full flex-y-center justify-end rd-full bg-container px-8 shadow-2xl">
+    <div class="h-full flex-y-center justify-end rd-full tech-header-section px-8">
       <GlobalSearch />
       <FullScreen v-if="!appStore.isMobile" :full="isFullscreen" @click="toggle" />
       <LangSwitch
@@ -63,4 +51,16 @@ const isDev = import.meta.env.DEV;
   </DarkModeContainer>
 </template>
 
-<style scoped></style>
+<style scoped>
+.tech-header {
+  background: transparent !important;
+}
+
+.tech-header-section {
+  background: rgba(10, 14, 26, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 212, 255, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+</style>

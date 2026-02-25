@@ -52,10 +52,10 @@ const setPrimaryOrg = async () => {
       <NCard class="min-h-400px min-w-600px w-50vw card-wrapper" :segmented="{ content: true, footer: 'soft' }">
         <template #header>
           <div class="flex items-center gap-4">
-            <NAvatar size="large">
+            <NAvatar size="large" class="tech-profile-avatar">
               <icon-solar:user-circle-linear class="text-icon-large" />
             </NAvatar>
-            <div>{{ userInfo.username }}</div>
+            <div class="text-#e2e8f0 font-bold">{{ userInfo.username }}</div>
           </div>
         </template>
         <NScrollbar class="max-h-60vh">
@@ -106,5 +106,11 @@ const setPrimaryOrg = async () => {
 :deep(.n-card__content) {
   flex: none m !important;
   height: fit-content;
+}
+
+.tech-profile-avatar {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(124, 58, 237, 0.3)) !important;
+  border: 2px solid rgba(0, 212, 255, 0.3);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
 }
 </style>

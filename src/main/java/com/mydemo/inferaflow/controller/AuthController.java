@@ -82,5 +82,22 @@ public class AuthController {
     }
 }
 
-// 刷新Token请求记录类
-record RefreshTokenRequest(String refreshToken) {}
+// 刷新Token请求体
+class RefreshTokenRequest {
+    private String refreshToken;
+
+    public RefreshTokenRequest() {
+    }
+
+    public String refreshToken() {
+        return refreshToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+}

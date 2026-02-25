@@ -11,7 +11,6 @@ import SearchDialog from './modules/search-dialog.vue';
 
 const appStore = useAppStore();
 
-// 文件预览相关状态
 const previewVisible = ref(false);
 const previewFileName = ref('');
 const previewFileMd5 = ref('');
@@ -29,7 +28,6 @@ function renderIcon(fileName: string) {
   return null;
 }
 
-// 处理文件预览
 function handleFilePreview(fileName: string, fileMd5: string) {
   console.log('[知识库] 点击预览按钮:', {
     fileName,
@@ -42,7 +40,6 @@ function handleFilePreview(fileName: string, fileMd5: string) {
   previewVisible.value = true;
 }
 
-// 关闭文件预览
 function closeFilePreview() {
   console.log('[知识库] 关闭文件预览');
   previewVisible.value = false;
@@ -63,7 +60,7 @@ const { columns, columnChecks, data, getData, loading } = useTable({
           {renderIcon(row.fileName)}
           <NEllipsis lineClamp={2} tooltip>
             <span
-              class="cursor-pointer hover:text-primary transition-colors"
+              class="cursor-pointer text-#cbd5e1 hover:text-#00d4ff transition-colors"
               onClick={() => handleFilePreview(row.fileName, row.fileMd5)}
             >
               {row.fileName}
@@ -79,7 +76,7 @@ const { columns, columnChecks, data, getData, loading } = useTable({
       render: row => (
         <NEllipsis tooltip>
           <span
-            class="cursor-pointer hover:text-primary transition-colors font-mono text-3"
+            class="cursor-pointer text-#64748b hover:text-#00d4ff transition-colors font-mono text-3"
             onClick={() => {
               navigator.clipboard.writeText(row.fileMd5);
               window.$message?.success('MD5已复制');
@@ -95,7 +92,7 @@ const { columns, columnChecks, data, getData, loading } = useTable({
       key: 'totalSize',
       title: '文件大小',
       width: 100,
-      render: row => fileSize(row.totalSize)
+      render: row => <span class="text-#94a3b8">{fileSize(row.totalSize)}</span>
     },
     {
       key: 'status',
@@ -113,13 +110,17 @@ const { columns, columnChecks, data, getData, loading } = useTable({
       key: 'isPublic',
       title: '是否公开',
       width: 100,
-      render: row => (row.public || row.isPublic ? <NTag type="success">公开</NTag> : <NTag type="warning">私有</NTag>)
+      render: row => (
+        row.public || row.isPublic
+          ? <NTag type="success" class="tech-tag-s" bordered={false}>公开</NTag>
+          : <NTag type="warning" class="tech-tag-w" bordered={false}>私有</NTag>
+      )
     },
     {
       key: 'createdAt',
       title: '上传时间',
       width: 100,
-      render: row => dayjs(row.createdAt).format('YYYY-MM-DD')
+      render: row => <span class="text-#64748b">{dayjs(row.createdAt).format('YYYY-MM-DD')}</span>
     },
     {
       key: 'operate',
@@ -158,11 +159,9 @@ onMounted(async () => {
   await getList();
 });
 
-/** 异步获取列表函数 该函数主要用于更新或初始化上传任务列表 它首先调用getData函数获取数据，然后根据获取到的数据状态更新任务列表 */
 async function getList() {
   console.log('[知识库] 开始获取文件列表');
 
-  // 等待获取最新数据
   await getData();
 
   console.log('[知识库] 获取到原始数据，数量:', data.value.length);
@@ -179,13 +178,9 @@ async function getList() {
     return;
   }
 
-  // 遍历获取到的数据，以处理每个项目
   data.value.forEach((item, dataIndex) => {
-    // 检查项目状态是否为已完成
     if (item.status === UploadStatus.Completed) {
-      // 查找任务列表中是否有匹配的文件MD5
       const index = tasks.value.findIndex(task => task.fileMd5 === item.fileMd5);
-      // 如果找到匹配项，则更新其状态
       if (index !== -1) {
         tasks.value[index].status = UploadStatus.Completed;
         console.log(`[知识库] 更新现有任务[${index}]:`, {
@@ -193,7 +188,6 @@ async function getList() {
           fileMd5: item.fileMd5
         });
       } else {
-        // 如果没有找到匹配项，则将该项目添加到任务列表中
         tasks.value.push(item);
         console.log(`[知识库] 添加新任务[${tasks.value.length - 1}]:`, {
           fileName: item.fileName,
@@ -201,7 +195,6 @@ async function getList() {
         });
       }
     } else if (!tasks.value.some(task => task.fileMd5 === item.fileMd5)) {
-      // 如果项目状态不是已完成，并且任务列表中没有相同的文件MD5，则将该项目的状态设置为中断，并添加到任务列表中
       item.status = UploadStatus.Break;
       tasks.value.push(item);
       console.log(`[知识库] 添加中断任务[${tasks.value.length - 1}]:`, {
@@ -230,7 +223,6 @@ async function handleDelete(fileMd5: string) {
     });
   }
 
-  // 如果文件一个分片也没有上传完成，则直接删除
   if (tasks.value[index].uploadedChunks && tasks.value[index].uploadedChunks.length === 0) {
     tasks.value.splice(index, 1);
     return;
@@ -258,10 +250,22 @@ function handleSearch() {
 }
 // #endregion
 
-// 渲染上传状态
 function renderStatus(status: UploadStatus, percentage: number) {
-  if (status === UploadStatus.Completed) return <NTag type="success">已完成</NTag>;
-  else if (status === UploadStatus.Break) return <NTag type="error">上传中断</NTag>;
+  if (status === UploadStatus.Completed) {
+    return (
+      <span class="tech-status-completed flex items-center gap-2">
+        <span class="tech-status-dot-s" />
+        <span class="text-#00ff88 text-12px">已完成</span>
+      </span>
+    );
+  } else if (status === UploadStatus.Break) {
+    return (
+      <span class="tech-status-break flex items-center gap-2">
+        <span class="tech-status-dot-e" />
+        <span class="text-#ff3366 text-12px">上传中断</span>
+      </span>
+    );
+  }
   return <NProgress percentage={percentage} processing />;
 }
 
@@ -291,7 +295,6 @@ function renderResumeUploadButton(row: Api.KnowledgeBase.UploadTask) {
   return null;
 }
 
-// 任务列表存在文件，直接续传
 function resumeUpload(row: Api.KnowledgeBase.UploadTask) {
   row.status = UploadStatus.Pending;
   store.startUpload();
@@ -327,7 +330,10 @@ async function onBeforeUpload(
 
 <template>
   <div class="min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
-    <NCard title="文件列表" :bordered="false" size="small" class="sm:flex-1-hidden card-wrapper">
+    <NCard title="文件列表" :bordered="false" size="small" class="sm:flex-1-hidden tech-kb-card">
+      <template #header>
+        <span class="tech-card-title">文件列表</span>
+      </template>
       <template #header-extra>
         <TableHeaderOperation v-model:columns="columnChecks" :loading="loading" @add="handleUpload" @refresh="getList">
           <template #prefix>
@@ -356,7 +362,7 @@ async function onBeforeUpload(
     </NCard>
     <UploadDialog v-model:visible="uploadVisible" />
     <SearchDialog v-model:visible="searchVisible" />
-    
+
     <!-- 文件预览弹窗 -->
     <NModal v-model:show="previewVisible" preset="card" title="文件预览" style="width: 80%; max-width: 1000px;">
       <FilePreview
@@ -370,6 +376,22 @@ async function onBeforeUpload(
 </template>
 
 <style scoped lang="scss">
+.tech-kb-card {
+  background: rgba(17, 24, 39, 0.6) !important;
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 212, 255, 0.1) !important;
+  border-radius: 12px !important;
+}
+
+.tech-card-title {
+  background: linear-gradient(135deg, #00d4ff, #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 600;
+  font-size: 16px;
+}
+
 .file-list-container {
   transition: width 0.3s ease;
 }
@@ -378,5 +400,41 @@ async function onBeforeUpload(
   .n-progress-icon.n-progress-icon--as-text {
     white-space: nowrap;
   }
+}
+
+.tech-tag-s {
+  background: rgba(0, 255, 136, 0.1) !important;
+  color: #00ff88 !important;
+  border: 1px solid rgba(0, 255, 136, 0.2) !important;
+}
+
+.tech-tag-w {
+  background: rgba(255, 170, 0, 0.1) !important;
+  color: #ffaa00 !important;
+  border: 1px solid rgba(255, 170, 0, 0.2) !important;
+}
+
+.tech-status-dot-s {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00ff88;
+  box-shadow: 0 0 6px rgba(0, 255, 136, 0.5);
+  display: inline-block;
+}
+
+.tech-status-dot-e {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ff3366;
+  box-shadow: 0 0 6px rgba(255, 51, 102, 0.5);
+  display: inline-block;
+  animation: error-blink 1.5s ease-in-out infinite;
+}
+
+@keyframes error-blink {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
 }
 </style>

@@ -4,7 +4,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.reactive.function.client.WebClient;
+import io.netty.channel.ChannelOption;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.transport.ProxyProvider;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
@@ -27,8 +34,27 @@ public class DeepSeekClient {
     public DeepSeekClient(@Value("${deepseek.api.url}") String apiUrl,
                          @Value("${deepseek.api.key}") String apiKey,
                          @Value("${deepseek.api.model}") String model,
+                         @Value("${deepseek.api.proxy.enabled:false}") boolean proxyEnabled,
+                         @Value("${deepseek.api.proxy.host:}") String proxyHost,
+                         @Value("${deepseek.api.proxy.port:7890}") int proxyPort,
+                         @Value("${deepseek.api.connect-timeout-ms:30000}") int connectTimeoutMs,
+                         @Value("${deepseek.api.response-timeout-ms:120000}") long responseTimeoutMs,
                          AiProperties aiProperties) {
-        WebClient.Builder builder = WebClient.builder().baseUrl(apiUrl);
+        HttpClient httpClient = HttpClient.create()
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeoutMs)
+                .responseTimeout(Duration.ofMillis(responseTimeoutMs));
+
+        if (proxyEnabled && proxyHost != null && !proxyHost.isBlank()) {
+            httpClient = httpClient.proxy(proxySpec -> proxySpec
+                    .type(ProxyProvider.Proxy.HTTP)
+                    .host(proxyHost)
+                    .port(proxyPort));
+            logger.info("DeepSeekClient 启用代理: {}:{}", proxyHost, proxyPort);
+        }
+
+        WebClient.Builder builder = WebClient.builder()
+                .baseUrl(apiUrl)
+                .clientConnector(new ReactorClientHttpConnector(httpClient));
         
         // 只有当 API key 不为空时才添加 Authorization header
         if (apiKey != null && !apiKey.trim().isEmpty()) {
@@ -45,19 +71,24 @@ public class DeepSeekClient {
                              String context,
                              List<Map<String, String>> history,
                              Consumer<String> onChunk,
-                             Consumer<Throwable> onError) {
+                             Consumer<Throwable> onError,
+                             Runnable onComplete) {
         
         Map<String, Object> request = buildRequest(userMessage, context, history);
         
         webClient.post()
                 .uri("/chat/completions")
+                .accept(MediaType.TEXT_EVENT_STREAM)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .retrieve()
-                .bodyToFlux(String.class)
+                .bodyToFlux(new ParameterizedTypeReference<ServerSentEvent<String>>() {})
+                .map(ServerSentEvent::data)
+                .filter(data -> data != null && !data.isBlank())
                 .subscribe(
                     chunk -> processChunk(chunk, onChunk),
-                    onError
+                    onError,
+                    onComplete
                 );
     }
     
@@ -137,23 +168,56 @@ public class DeepSeekClient {
     
     private void processChunk(String chunk, Consumer<String> onChunk) {
         try {
-            // 检查是否是结束标记
-            if ("[DONE]".equals(chunk)) {
-                logger.debug("对话结束");
-                return;
-            }
-            
-            // 直接解析 JSON
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode node = mapper.readTree(chunk);
-            String content = node.path("choices")
-                               .path(0)
-                               .path("delta")
-                               .path("content")
-                               .asText("");
-            
-            if (!content.isEmpty()) {
-                onChunk.accept(content);
+            // 有些服务会把多个 data 行拼在一个 chunk 里，逐行解析更稳妥
+            String[] lines = chunk.split("\\r?\\n");
+            for (String rawLine : lines) {
+                String line = rawLine == null ? "" : rawLine.trim();
+                if (line.isEmpty()) {
+                    continue;
+                }
+
+                if (line.startsWith("data:")) {
+                    line = line.substring(5).trim();
+                }
+
+                // 检查是否是结束标记
+                if ("[DONE]".equals(line)) {
+                    logger.debug("对话结束");
+                    continue;
+                }
+
+                // 直接解析 JSON
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode node = mapper.readTree(line);
+
+                // OpenAI 兼容流：choices[0].delta.content（字符串或数组）
+                String content = "";
+                JsonNode deltaContent = node.path("choices").path(0).path("delta").path("content");
+                if (deltaContent.isTextual()) {
+                    content = deltaContent.asText("");
+                } else if (deltaContent.isArray()) {
+                    StringBuilder sb = new StringBuilder();
+                    for (JsonNode item : deltaContent) {
+                        if (item.isTextual()) {
+                            sb.append(item.asText(""));
+                        } else if (item.has("text")) {
+                            sb.append(item.path("text").asText(""));
+                        }
+                    }
+                    content = sb.toString();
+                }
+
+                // 兜底：非流式结构或部分兼容实现
+                if (content.isEmpty()) {
+                    content = node.path("choices").path(0).path("message").path("content").asText("");
+                }
+                if (content.isEmpty()) {
+                    content = node.path("output_text").asText("");
+                }
+
+                if (!content.isEmpty()) {
+                    onChunk.accept(content);
+                }
             }
         } catch (Exception e) {
             logger.error("处理数据块时出错: {}", e.getMessage(), e);

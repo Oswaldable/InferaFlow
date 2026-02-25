@@ -762,17 +762,163 @@ public class AdminController {
 /**
  * 管理员用户请求体
  */
-record AdminUserRequest(String username, String password) {}
+class AdminUserRequest {
+    private String username;
+    private String password;
+
+    public AdminUserRequest() {
+    }
+
+    public String username() {
+        return username;
+    }
+
+    public String password() {
+        return password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+}
 
 /**
  * 组织标签请求体
  */
-record OrgTagRequest(String tagId, String name, String description, String parentTag) {}
+class OrgTagRequest {
+    private String tagId;
+    private String name;
+    private String description;
+    private String parentTag;
+
+    public OrgTagRequest() {
+    }
+
+    public String tagId() {
+        return tagId;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public String description() {
+        return description;
+    }
+
+    public String parentTag() {
+        return parentTag;
+    }
+
+    public String getTagId() {
+        return tagId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getParentTag() {
+        return parentTag;
+    }
+
+    public void setTagId(String tagId) {
+        this.tagId = tagId;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setParentTag(String parentTag) {
+        this.parentTag = parentTag;
+    }
+}
 
 /**
  * 分配组织标签请求体
  */
-record AssignOrgTagsRequest(List<String> orgTags) {}
+class AssignOrgTagsRequest {
+    private List<String> orgTags;
 
-// 添加组织标签更新请求记录类
-record OrgTagUpdateRequest(String name, String description, String parentTag) {} 
+    public AssignOrgTagsRequest() {
+    }
+
+    public List<String> orgTags() {
+        return orgTags;
+    }
+
+    public List<String> getOrgTags() {
+        return orgTags;
+    }
+
+    public void setOrgTags(List<String> orgTags) {
+        this.orgTags = orgTags;
+    }
+}
+
+// 添加组织标签更新请求体
+class OrgTagUpdateRequest {
+    private String name;
+    private String description;
+    private String parentTag;
+
+    public OrgTagUpdateRequest() {
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public String description() {
+        return description;
+    }
+
+    public String parentTag() {
+        return parentTag;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getParentTag() {
+        return parentTag;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setParentTag(String parentTag) {
+        this.parentTag = parentTag;
+    }
+}
