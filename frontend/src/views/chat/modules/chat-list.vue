@@ -102,6 +102,8 @@ onMounted(() => {
 }
 
 :deep(.n-form .n-form-item .n-form-item-label) {
+  font-family: var(--chat-font-display, 'Rajdhani', 'Avenir Next Condensed', 'PingFang SC', sans-serif);
+  font-weight: 600;
   color: #b1c0d3;
   font-size: 12px;
   letter-spacing: 0.08em;
@@ -113,6 +115,8 @@ onMounted(() => {
 }
 
 :deep(.n-date-picker .n-input__input-el) {
+  font-family: var(--chat-font-mono, 'JetBrains Mono', Menlo, Monaco, monospace);
+  font-weight: 500;
   color: #dbe6f5 !important;
 }
 

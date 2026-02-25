@@ -244,6 +244,7 @@ async function handleSourceFileClick(fileInfo: { fileName: string, referenceNumb
   box-shadow: 0 10px 26px rgba(2, 8, 23, 0.36);
   overflow: hidden;
   animation: message-appear 0.28s ease-out both;
+  font-family: var(--chat-font-body, 'Space Grotesk', 'PingFang SC', sans-serif);
 }
 
 .tech-message::after {
@@ -283,8 +284,10 @@ async function handleSourceFileClick(fileInfo: { fileName: string, referenceNumb
 }
 
 .tech-message-name {
+  font-family: var(--chat-font-display, 'Rajdhani', 'Avenir Next Condensed', 'PingFang SC', sans-serif);
   font-size: 14px;
   font-weight: 700;
+  letter-spacing: 0.03em;
 }
 
 .tech-message-name.is-user {
@@ -299,8 +302,11 @@ async function handleSourceFileClick(fileInfo: { fileName: string, referenceNumb
 }
 
 .tech-message-time {
+  font-family: var(--chat-font-mono, 'JetBrains Mono', Menlo, Monaco, monospace);
+  font-weight: 500;
   font-size: 12px;
   color: #64748b;
+  font-variant-numeric: tabular-nums;
 }
 
 .tech-avatar-user {
@@ -324,6 +330,9 @@ async function handleSourceFileClick(fileInfo: { fileName: string, referenceNumb
   margin-left: 48px;
   color: #d9e6f5;
   line-height: 1.72;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
   border-radius: 12px;
   border: 1px solid rgba(125, 211, 252, 0.24);
   background: linear-gradient(160deg, rgba(15, 23, 42, 0.64), rgba(12, 20, 36, 0.42));
@@ -354,6 +363,9 @@ async function handleSourceFileClick(fileInfo: { fileName: string, referenceNumb
   margin-left: 48px;
   color: #e6fffb;
   line-height: 1.72;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
   border-radius: 12px;
   border: 1px solid rgba(45, 212, 191, 0.3);
   background: linear-gradient(140deg, rgba(15, 34, 41, 0.6), rgba(12, 23, 29, 0.44));
@@ -375,6 +387,10 @@ async function handleSourceFileClick(fileInfo: { fileName: string, referenceNumb
 
 .tech-action-btn:hover {
   color: #67e8f9 !important;
+}
+
+:deep(.n-button__content) {
+  font-family: var(--chat-font-mono, 'JetBrains Mono', Menlo, Monaco, monospace);
 }
 
 .tech-thinking-dots {

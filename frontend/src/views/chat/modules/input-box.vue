@@ -153,6 +153,7 @@ const handShortcut = (e: KeyboardEvent) => {
   -webkit-backdrop-filter: blur(12px);
   transition: all 0.28s ease;
   box-shadow: 0 10px 26px rgba(2, 8, 23, 0.34);
+  font-family: var(--chat-font-body, 'Space Grotesk', 'PingFang SC', sans-serif);
 }
 
 .tech-input-box:focus-within {
@@ -175,17 +176,23 @@ const handShortcut = (e: KeyboardEvent) => {
 }
 
 .header-label {
+  font-family: var(--chat-font-display, 'Rajdhani', 'Avenir Next Condensed', 'PingFang SC', sans-serif);
+  font-weight: 600;
   font-size: 11px;
   color: rgba(94, 234, 212, 0.9);
   letter-spacing: 0.16em;
 }
 
 .header-tip {
+  font-family: var(--chat-font-body, 'Space Grotesk', 'PingFang SC', sans-serif);
+  font-weight: 500;
   font-size: 12px;
   color: #7891ad;
 }
 
 .header-counter {
+  font-family: var(--chat-font-mono, 'JetBrains Mono', Menlo, Monaco, monospace);
+  font-weight: 600;
   min-width: 46px;
   height: 24px;
   padding: 0 8px;
@@ -197,9 +204,12 @@ const handShortcut = (e: KeyboardEvent) => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  font-variant-numeric: tabular-nums;
 }
 
 .tech-textarea {
+  font-family: var(--chat-font-body, 'Space Grotesk', 'PingFang SC', sans-serif);
+  font-weight: 500;
   min-height: 40px;
   width: 100%;
   resize: none;
@@ -237,8 +247,11 @@ const handShortcut = (e: KeyboardEvent) => {
 }
 
 .status-text {
+  font-family: var(--chat-font-display, 'Rajdhani', 'Avenir Next Condensed', 'PingFang SC', sans-serif);
+  font-weight: 600;
   font-size: 12px;
   color: #9ab1c9;
+  letter-spacing: 0.04em;
 }
 
 .tech-status-pill.is-online {

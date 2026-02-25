@@ -62,6 +62,9 @@ const assistantMessages = computed(() => list.value.filter(item => item.role ===
 
 <style scoped>
 .tech-chat-page {
+  --chat-font-display: 'Rajdhani', 'DIN Alternate', 'Avenir Next Condensed', 'PingFang SC', sans-serif;
+  --chat-font-body: 'Space Grotesk', 'SF Pro Display', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+  --chat-font-mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
   position: relative;
   height: 100%;
   display: flex;
@@ -69,7 +72,11 @@ const assistantMessages = computed(() => list.value.filter(item => item.role ===
   gap: 14px;
   padding: 16px;
   overflow: hidden;
-  font-family: 'Space Grotesk', 'Avenir Next Condensed', 'PingFang SC', sans-serif;
+  font-family: var(--chat-font-body);
+  font-feature-settings: 'liga' 1, 'calt' 1;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .tech-ambient-layer {
@@ -128,16 +135,20 @@ const assistantMessages = computed(() => list.value.filter(item => item.role ===
 
 .dashboard-kicker {
   margin: 0;
+  font-family: var(--chat-font-mono);
+  font-weight: 500;
   font-size: 12px;
   letter-spacing: 0.18em;
   color: rgba(148, 163, 184, 0.9);
+  text-transform: uppercase;
 }
 
 .dashboard-title {
   margin: 6px 0 0;
+  font-family: var(--chat-font-display);
   font-size: clamp(20px, 3vw, 28px);
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   color: #e2f6f1;
   text-shadow: 0 0 20px rgba(45, 212, 191, 0.26);
 }
@@ -159,15 +170,21 @@ const assistantMessages = computed(() => list.value.filter(item => item.role ===
 }
 
 .metric-label {
+  font-family: var(--chat-font-mono);
+  font-weight: 500;
   font-size: 10px;
   color: rgba(148, 163, 184, 0.86);
   letter-spacing: 0.12em;
 }
 
 .metric-value {
+  font-family: var(--chat-font-display);
+  font-weight: 600;
   font-size: 18px;
   line-height: 1.1;
   color: #f8fafc;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
 .status-chip {
