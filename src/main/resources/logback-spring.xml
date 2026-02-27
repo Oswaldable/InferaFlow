@@ -5,7 +5,7 @@
 
     <!-- 定义日志文件的存储地址 -->
     <property name="LOG_HOME" value="./logs" />
-    <property name="CONSOLE_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %boldYellow([%-5level]) %boldMagenta(${PID:- }) %white(=>) %boldCyan([%15.15thread]) %boldBlue(%-40.40logger{39}) %white(:) %boldWhite(%msg)%n%wEx"/>
+    <property name="CONSOLE_PATTERN" value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %highlight([%-5level]) %clr(${PID:- }){magenta} %clr(=>){faint} %clr([%15.15thread]){cyan} %clr(%-40.40logger{39}){blue} %clr(:){faint} %clr(%msg){white}%n%wEx"/>
     <property name="FILE_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level ${PID:- } --- [%15.15thread] %-40.40logger{39} : %msg%n%wEx"/>
     
     <!-- 控制台输出 -->
@@ -117,6 +117,12 @@
         <logger name="com.mydemo.inferaflow" level="DEBUG"/>
         <logger name="org.springframework.web" level="DEBUG"/>
         <logger name="org.springframework.security" level="DEBUG"/>
+        <!-- 避免流式分片日志刷屏 -->
+        <logger name="com.mydemo.inferaflow.service.ChatHandler" level="INFO"/>
+        <logger name="com.mydemo.inferaflow.client.DeepSeekClient" level="INFO"/>
+        <logger name="com.mydemo.inferaflow.service.HybridSearchService" level="INFO"/>
+        <logger name="org.springframework.web.HttpLogging" level="WARN"/>
+        <logger name="org.springframework.web.reactive.function.client.ExchangeFunctions" level="WARN"/>
     </springProfile>
 
     <!-- 生产环境配置 -->
