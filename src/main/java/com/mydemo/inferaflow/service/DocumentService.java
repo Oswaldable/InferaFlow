@@ -16,10 +16,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.sax.BodyContentHandler;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -280,8 +286,41 @@ public class DocumentService {
             // 判断文件类型
             String fileExtension = getFileExtension(fileName).toLowerCase();
             boolean isTextFile = isTextFile(fileExtension);
+            boolean isRichDoc = isRichDocument(fileExtension);
 
-            if (isTextFile) {
+            if (isRichDoc) {
+                // 对于 PDF、Word 等富文档，使用 Tika 提取文本内容
+                try (BufferedInputStream bufferedStream = new BufferedInputStream(inputStream)) {
+                    BodyContentHandler handler = new BodyContentHandler(10240);
+                    Metadata metadata = new Metadata();
+                    ParseContext context = new ParseContext();
+                    AutoDetectParser parser = new AutoDetectParser();
+
+                    boolean truncated = false;
+                    try {
+                        parser.parse(bufferedStream, handler, metadata, context);
+                    } catch (org.xml.sax.SAXException e) {
+                        // BodyContentHandler 超过字符限制时抛出 WriteLimitReachedException (SAXException 子类)
+                        // 这不是错误，handler 中仍保留了已提取的内容
+                        truncated = true;
+                        logger.info("文件内容超过预览限制，已截断: fileMd5={}", fileMd5);
+                    }
+
+                    String result = handler.toString().trim();
+                    if (result.isEmpty()) {
+                        result = "文件内容为空或无法提取文本。";
+                    } else if (truncated) {
+                        result += "\n\n... (内容已截断，仅显示部分预览)";
+                    }
+
+                    logger.info("成功使用Tika提取富文档预览内容: fileMd5={}, 使用MD5路径={}, contentLength={}, truncated={}",
+                        fileMd5, usedNewPath, result.length(), truncated);
+                    return result;
+                } catch (Exception e) {
+                    logger.error("Tika解析文件失败: fileMd5={}, fileName={}", fileMd5, fileName, e);
+                    return "文件解析失败，请下载后查看。";
+                }
+            } else if (isTextFile) {
                 // 对于文本文件，读取前10KB内容
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"))) {
                     StringBuilder content = new StringBuilder();
@@ -343,12 +382,21 @@ public class DocumentService {
      */
     private boolean isTextFile(String extension) {
         String[] textExtensions = {
-            "txt", "md", "doc", "docx", "pdf", "html", "htm", "xml", "json", 
-            "csv", "log", "java", "js", "ts", "py", "cpp", "c", "h", "css", 
+            "txt", "md", "html", "htm", "xml", "json",
+            "csv", "log", "java", "js", "ts", "py", "cpp", "c", "h", "css",
             "scss", "less", "sql", "yml", "yaml", "properties", "conf", "config"
         };
-        
+
         return Arrays.stream(textExtensions)
+                .anyMatch(ext -> ext.equalsIgnoreCase(extension));
+    }
+
+    /**
+     * 判断是否为需要 Tika 解析的富文档（PDF、Word 等二进制文档格式）
+     */
+    private boolean isRichDocument(String extension) {
+        String[] richDocExtensions = {"pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx"};
+        return Arrays.stream(richDocExtensions)
                 .anyMatch(ext -> ext.equalsIgnoreCase(extension));
     }
     
