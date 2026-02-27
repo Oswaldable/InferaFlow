@@ -160,6 +160,14 @@
             <version>4.5.14</version>
         </dependency>
 
+        <!-- Fix macOS arm64 DNS native loading warning for reactor-netty -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-resolver-dns-native-macos</artifactId>
+            <classifier>osx-aarch_64</classifier>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- Gson (JSON Parsing) -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
