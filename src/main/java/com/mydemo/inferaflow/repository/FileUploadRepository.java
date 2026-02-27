@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public interface FileUploadRepository extends JpaRepository<FileUpload, Long> {
@@ -61,6 +60,8 @@ public interface FileUploadRepository extends JpaRepository<FileUpload, Long> {
      * @return 用户上传的文件列表
      */
     List<FileUpload> findByUserId(String userId);
+
+    List<FileUpload> findByUserIdOrderByCreatedAtDesc(String userId);
 
     List<FileUpload> findByFileMd5In(List<String> md5List);
 }

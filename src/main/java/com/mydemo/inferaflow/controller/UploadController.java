@@ -5,6 +5,7 @@ import com.mydemo.inferaflow.model.FileProcessingTask;
 import com.mydemo.inferaflow.model.FileUpload;
 import com.mydemo.inferaflow.repository.FileUploadRepository;
 import com.mydemo.inferaflow.service.FileTypeValidationService;
+import com.mydemo.inferaflow.service.FileProcessingTaskService;
 import com.mydemo.inferaflow.service.UploadService;
 import com.mydemo.inferaflow.service.UserService;
 import com.mydemo.inferaflow.utils.LogUtils;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/upload")
@@ -44,6 +46,9 @@ public class UploadController {
     
     @Autowired
     private FileTypeValidationService fileTypeValidationService;
+
+    @Autowired
+    private FileProcessingTaskService fileProcessingTaskService;
 
     public UploadController(UploadService uploadService, KafkaTemplate<String, Object> kafkaTemplate) {
         this.uploadService = uploadService;
@@ -297,6 +302,7 @@ public class UploadController {
                 return true;
             });
             LogUtils.logBusiness("MERGE_FILE", userId, "文件处理任务已发送: fileMd5=%s, fileName=%s, fileType=%s", request.fileMd5(), request.fileName(), fileType);
+            fileProcessingTaskService.markPending(request.fileMd5(), userId);
 
             // 构建数据对象
             Map<String, Object> data = new HashMap<>();
@@ -342,6 +348,68 @@ public class UploadController {
      * 合并请求的辅助类，包含文件的MD5值和文件名
      */
     public record MergeRequest(String fileMd5, String fileName) {}
+
+    /**
+     * 获取当前用户的文件处理任务列表
+     */
+    @GetMapping("/tasks")
+    public ResponseEntity<Map<String, Object>> getProcessingTasks(@RequestAttribute("userId") String userId) {
+        LogUtils.PerformanceMonitor monitor = LogUtils.startPerformanceMonitor("GET_PROCESSING_TASKS");
+        try {
+            List<FileUpload> tasks = fileProcessingTaskService.getUserTasks(userId);
+            List<Map<String, Object>> taskData = tasks.stream()
+                    .map(this::buildTaskData)
+                    .collect(Collectors.toList());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("code", 200);
+            response.put("message", "获取任务列表成功");
+            response.put("data", taskData);
+            monitor.end("获取任务列表成功");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            LogUtils.logBusinessError("GET_PROCESSING_TASKS", userId, "获取任务列表失败", e);
+            monitor.end("获取任务列表失败: " + e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            errorResponse.put("message", "获取任务列表失败: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    /**
+     * 获取当前用户指定文件的处理任务详情
+     */
+    @GetMapping("/tasks/{fileMd5}")
+    public ResponseEntity<Map<String, Object>> getProcessingTaskDetail(
+            @PathVariable String fileMd5,
+            @RequestAttribute("userId") String userId) {
+        LogUtils.PerformanceMonitor monitor = LogUtils.startPerformanceMonitor("GET_PROCESSING_TASK_DETAIL");
+        try {
+            Optional<FileUpload> taskOpt = fileProcessingTaskService.getUserTask(userId, fileMd5);
+            if (taskOpt.isEmpty()) {
+                Map<String, Object> notFoundResponse = new HashMap<>();
+                notFoundResponse.put("code", HttpStatus.NOT_FOUND.value());
+                notFoundResponse.put("message", "任务不存在");
+                monitor.end("任务不存在");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(notFoundResponse);
+            }
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("code", 200);
+            response.put("message", "获取任务详情成功");
+            response.put("data", buildTaskData(taskOpt.get()));
+            monitor.end("获取任务详情成功");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            LogUtils.logBusinessError("GET_PROCESSING_TASK_DETAIL", userId, "获取任务详情失败: fileMd5=%s", e, fileMd5);
+            monitor.end("获取任务详情失败: " + e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            errorResponse.put("message", "获取任务详情失败: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
 
     /**
      * 获取支持的文件类型列表接口
@@ -480,5 +548,26 @@ public class UploadController {
                 return extension.toUpperCase() + "文件";
         }
     }
-}
 
+    private Map<String, Object> buildTaskData(FileUpload fileUpload) {
+        Map<String, Object> task = new HashMap<>();
+        task.put("fileMd5", fileUpload.getFileMd5());
+        task.put("fileName", fileUpload.getFileName());
+        task.put("uploadStatus", fileUpload.getStatus());
+        task.put("processingStatus", resolveProcessingStatus(fileUpload).name());
+        task.put("processingError", fileUpload.getProcessingError());
+        task.put("createdAt", fileUpload.getCreatedAt());
+        task.put("mergedAt", fileUpload.getMergedAt());
+        task.put("processingUpdatedAt", fileUpload.getProcessingUpdatedAt());
+        return task;
+    }
+
+    private FileUpload.ProcessingStatus resolveProcessingStatus(FileUpload fileUpload) {
+        if (fileUpload.getProcessingStatus() != null) {
+            return fileUpload.getProcessingStatus();
+        }
+        return fileUpload.getStatus() == 1
+                ? FileUpload.ProcessingStatus.COMPLETED
+                : FileUpload.ProcessingStatus.PENDING;
+    }
+}

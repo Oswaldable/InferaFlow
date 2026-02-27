@@ -86,6 +86,9 @@ public class UploadService {
                 fileUpload.setUserId(userId); // 设置上传用户ID
                 fileUpload.setOrgTag(orgTag); // 设置组织标签
                 fileUpload.setPublic(isPublic); // 设置是否公开
+                fileUpload.setProcessingStatus(FileUpload.ProcessingStatus.PENDING);
+                fileUpload.setProcessingError(null);
+                fileUpload.setProcessingUpdatedAt(LocalDateTime.now());
                 try {
                     fileUploadRepository.save(fileUpload);
                     logger.info("文件记录创建成功 => fileMd5: {}, fileName: {}, fileType: {}", fileMd5, fileName, fileType);

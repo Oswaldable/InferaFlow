@@ -59,7 +59,10 @@ public class OrgTagAuthorizationFilter extends OncePerRequestFilter {
             // 控制器方法通过@RequestAttribute("userId")获取用户ID
             if (path.matches(".*/upload/chunk.*") || 
                 path.matches(".*/upload/merge.*") || 
+                path.matches(".*/upload/status.*") ||
+                path.matches(".*/upload/tasks.*") ||
                 path.matches(".*/documents/uploads.*") ||
+                path.matches(".*/documents/accessible.*") ||
                 path.matches(".*/search/hybrid.*") ||
                 (path.matches(".*/documents/[a-fA-F0-9]{32}.*") && "DELETE".equals(request.getMethod()))) {
                 
@@ -68,8 +71,14 @@ public class OrgTagAuthorizationFilter extends OncePerRequestFilter {
                     operation = "分片上传";
                 } else if (path.contains("/merge")) {
                     operation = "合并分片";
+                } else if (path.contains("/status")) {
+                    operation = "上传状态";
+                } else if (path.contains("/tasks")) {
+                    operation = "处理任务";
                 } else if (path.contains("/uploads")) {
                     operation = "获取用户文档";
+                } else if (path.contains("/accessible")) {
+                    operation = "获取可访问文档";
                 } else if (path.contains("/search/hybrid")) {
                     operation = "混合检索";
                 } else if ("DELETE".equals(request.getMethod()) && path.matches(".*/documents/[a-fA-F0-9]{32}.*")) {
@@ -83,9 +92,11 @@ public class OrgTagAuthorizationFilter extends OncePerRequestFilter {
                 if (token != null) {
                     String userId = jwtUtils.extractUserIdFromToken(token);
                     String role = jwtUtils.extractRoleFromToken(token);
+                    String orgTags = jwtUtils.extractOrgTagsFromToken(token);
                     if (userId != null) {
                         request.setAttribute("userId", userId);
                         request.setAttribute("role", role);
+                        request.setAttribute("orgTags", orgTags);
                         logger.debug("为{}请求设置userId属性: {}, role: {}", operation, userId, role);
                     } else {
                         logger.warn("{}请求中无法从token提取userId", operation);

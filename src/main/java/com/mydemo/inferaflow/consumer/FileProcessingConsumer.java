@@ -2,6 +2,7 @@ package com.mydemo.inferaflow.consumer;
 
 import com.mydemo.inferaflow.config.KafkaConfig;
 import com.mydemo.inferaflow.model.FileProcessingTask;
+import com.mydemo.inferaflow.service.FileProcessingTaskService;
 import com.mydemo.inferaflow.service.ParseService;
 import com.mydemo.inferaflow.service.VectorizationService;
 import io.minio.MinioClient;
@@ -23,13 +24,17 @@ public class FileProcessingConsumer {
 
     private final ParseService parseService;
     private final VectorizationService vectorizationService;
+    private final FileProcessingTaskService fileProcessingTaskService;
     @Autowired
     private KafkaConfig kafkaConfig;
 
 
-    public FileProcessingConsumer(ParseService parseService, VectorizationService vectorizationService) {
+    public FileProcessingConsumer(ParseService parseService,
+                                  VectorizationService vectorizationService,
+                                  FileProcessingTaskService fileProcessingTaskService) {
         this.parseService = parseService;
         this.vectorizationService = vectorizationService;
+        this.fileProcessingTaskService = fileProcessingTaskService;
     }
 
     @KafkaListener(topics = "#{kafkaConfig.getFileProcessingTopic()}", groupId = "#{kafkaConfig.getFileProcessingGroupId()}")
@@ -40,6 +45,7 @@ public class FileProcessingConsumer {
                 
         InputStream fileStream = null;
         try {
+            fileProcessingTaskService.markParsing(task.getFileMd5(), task.getUserId());
             // 下载文件
             fileStream = downloadFileFromStorage(task.getFilePath());
             // 在 downloadFileFromStorage 返回后立即检查流是否可读
@@ -58,11 +64,14 @@ public class FileProcessingConsumer {
             log.info("文件解析完成，fileMd5: {}", task.getFileMd5());
 
             // 向量化处理
+            fileProcessingTaskService.markVectorizing(task.getFileMd5(), task.getUserId());
             vectorizationService.vectorize(task.getFileMd5(), 
                     task.getUserId(), task.getOrgTag(), task.isPublic());
             log.info("向量化完成，fileMd5: {}", task.getFileMd5());
+            fileProcessingTaskService.markCompleted(task.getFileMd5(), task.getUserId());
         } catch (Exception e) {
             log.error("Error processing task: {}", task, e);
+            fileProcessingTaskService.markFailed(task.getFileMd5(), task.getUserId(), e.getMessage());
             // 抛出异常让 Kafka 的 DefaultErrorHandler 捕获并触发重试 / 死信
             throw new RuntimeException("Error processing task", e);
         } finally {

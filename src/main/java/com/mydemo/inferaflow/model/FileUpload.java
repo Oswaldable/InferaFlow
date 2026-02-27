@@ -3,7 +3,6 @@ package com.mydemo.inferaflow.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +14,14 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "file_upload")
 public class FileUpload {
+    public enum ProcessingStatus {
+        PENDING,
+        PARSING,
+        VECTORIZING,
+        COMPLETED,
+        FAILED
+    }
+
     /**
      * 文件的唯一标识符
      * 使用文件的MD5值来唯一确定一个文件
@@ -76,7 +83,24 @@ public class FileUpload {
      * 文件合并完成的时间
      * 当文件上传状态为已完成时，自动记录完成的时间
      */
-    @UpdateTimestamp
     private LocalDateTime mergedAt;
-}
 
+    /**
+     * 文件处理状态（Kafka异步处理链路）
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "processing_status", length = 20)
+    private ProcessingStatus processingStatus = ProcessingStatus.PENDING;
+
+    /**
+     * 文件处理失败原因
+     */
+    @Column(name = "processing_error", columnDefinition = "TEXT")
+    private String processingError;
+
+    /**
+     * 文件处理状态最后更新时间
+     */
+    @Column(name = "processing_updated_at")
+    private LocalDateTime processingUpdatedAt;
+}
