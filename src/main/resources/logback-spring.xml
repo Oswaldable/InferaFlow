@@ -5,8 +5,8 @@
 
     <!-- 定义日志文件的存储地址 -->
     <property name="LOG_HOME" value="./logs" />
-    <property name="CONSOLE_PATTERN" value="%clr(%d{HH:mm:ss.SSS}){faint} %highlight(%-5level) %clr([%thread]){cyan} %clr(%logger{36}){blue} %clr(»){faint} %msg%n%wEx"/>
-    <property name="FILE_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"/>
+    <property name="CONSOLE_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %boldYellow([%-5level]) %boldMagenta(${PID:- }) %white(=>) %boldCyan([%15.15thread]) %boldBlue(%-40.40logger{39}) %white(:) %boldWhite(%msg)%n%wEx"/>
+    <property name="FILE_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level ${PID:- } --- [%15.15thread] %-40.40logger{39} : %msg%n%wEx"/>
     
     <!-- 控制台输出 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">

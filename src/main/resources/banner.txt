@@ -1,0 +1,12 @@
+${AnsiStyle.BOLD}${AnsiColor.BRIGHT_CYAN}
+██╗███╗   ██╗███████╗███████╗██████╗  █████╗ ███████╗██╗      ██████╗ ██╗    ██╗
+██║████╗  ██║██╔════╝██╔════╝██╔══██╗██╔══██╗██╔════╝██║     ██╔═══██╗██║    ██║
+██║██╔██╗ ██║█████╗  █████╗  ██████╔╝███████║█████╗  ██║     ██║   ██║██║ █╗ ██║
+██║██║╚██╗██║██╔══╝  ██╔══╝  ██╔══██╗██╔══██║██╔══╝  ██║     ██║   ██║██║███╗██║
+██║██║ ╚████║██║     ███████╗██║  ██║██║  ██║██║     ███████╗╚██████╔╝╚███╔███╔╝
+╚═╝╚═╝  ╚═══╝╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚══════╝ ╚═════╝  ╚══╝╚══╝
+${AnsiColor.BRIGHT_MAGENTA}${AnsiStyle.BOLD}
+          ◆ InferaFlow · Enterprise Intelligence RAG Platform · AI Native ◆
+${AnsiColor.BRIGHT_YELLOW}
+          PROFILE ${spring.profiles.active:default}   VERSION ${application.version:0.0.1}   JAVA ${java.version}
+${AnsiStyle.NORMAL}${AnsiColor.DEFAULT}
